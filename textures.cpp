@@ -43,6 +43,11 @@ Texture2D coindisplay = {};
 Texture2D shop = {};
 Texture2D shop_hover = {};
 Texture2D shop_page = {};
+Texture2D peach = {};
+Texture2D peach_hover = {};
+Texture2D water = {};
+Texture2D water_hover = {};
+Texture2D guide_page = {};
 
 
 void loadGameTextures(){
@@ -91,6 +96,11 @@ void loadGameTextures(){
     shop = LoadTexture("assets/game/shop.png");
     shop_hover = LoadTexture("assets/game/shop_hover.png");
     shop_page = LoadTexture("assets/game/shop_page.png");
+    peach = LoadTexture("assets/game/peach.png");
+    peach_hover = LoadTexture("assets/game/peach_hover.png");
+    water = LoadTexture("assets/game/water.png");
+    water_hover = LoadTexture("assets/game/water_hover.png");
+    guide_page = LoadTexture("assets/menu/guide_page.png");
 
     
 
@@ -138,6 +148,11 @@ void loadGameTextures(){
     SetTextureFilter(shop, TEXTURE_FILTER_POINT);
     SetTextureFilter(shop_hover, TEXTURE_FILTER_POINT);
     SetTextureFilter(shop_page, TEXTURE_FILTER_POINT);
+    SetTextureFilter(peach, TEXTURE_FILTER_POINT);
+    SetTextureFilter(peach_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(guide_page, TEXTURE_FILTER_POINT);
 
 
 }

@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "textures.h"
 #include <cmath>
+#include <fstream>
 
 int main(){
     initGame();
@@ -11,7 +12,8 @@ int main(){
         menu,
         guide,
         screen2,
-        shop
+        shop,
+        pause
     };
 
     bool running = true;
@@ -47,6 +49,13 @@ int main(){
     int coins = 0;
     int soldcount = 0;
     bool showsoldcount = false;
+
+    //notifications
+    int shopmessage = 0;
+    double messagetimer = 0;
+
+    //pause
+    bool paused = false;
 
     while(!WindowShouldClose() && running){
         Vector2 cursor = GetMousePosition();
@@ -89,6 +98,9 @@ int main(){
             //if guide is hovered or not
             if(guideBool){
                 DrawTextureEx(menu_guide_button_hover, {0, 0}, 0, 4.0f, WHITE);
+                if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    currentscreen = screen::guide;
+                }
             }
             else{
                 DrawTextureEx(menu_guide_button, {0, 0}, 0, 4.0f, WHITE);
@@ -96,8 +108,12 @@ int main(){
 
         }
         else if(currentscreen == screen::screen2){
+            if(IsKeyPressed(KEY_ESCAPE)){
+                currentscreen = screen::pause;
+            }
             ClearBackground(WHITE);
             DrawTextureEx(game_background, {0, 0}, 0, 4.0f, WHITE);
+            
 
             //seed inventory button
             Rectangle seedbuttonhitbox = {
@@ -404,8 +420,145 @@ int main(){
         }
         else if(currentscreen == screen::shop){
             DrawTextureEx(shop_page, {0, 0}, 0, scale, WHITE);
-            if(IsKeyPressed(KEY_ESCAPE)  || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            //peach buy
+            Rectangle peachhitbox = {
+                87 * 4,
+                86 * 4,
+                18 * 4,
+                17 * 4
+            };
+
+            bool buypeachhover = CheckCollisionPointRec(cursor, peachhitbox);
+
+            //buy it
+            if(buypeachhover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                if(coins >= 4){
+                    coins -= 4;
+                    seedcount++;
+                    shopmessage = 1;
+                }
+                else{
+                    shopmessage = 3;
+                }
+                messagetimer = GetTime();
+            }
+            //draw peach button
+            if(buypeachhover){
+                DrawTextureEx(peach_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(peach, {0, 0}, 0, scale, WHITE);
+            }
+
+            //water buy
+            Rectangle waterhitbox = {
+                87 * 4,
+                109 * 4,
+                18 * 4,
+                17 * 4
+            };
+
+            bool buywaterhover = CheckCollisionPointRec(cursor, waterhitbox);
+
+            //buy it
+            if(buywaterhover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                if(coins >= 5){
+                    coins -= 5;
+                    watercount++;
+                    shopmessage = 2;
+                }
+                else{
+                    shopmessage = 3;
+                }
+                messagetimer = GetTime();
+            }
+            //draw water button
+            if(buywaterhover){
+                DrawTextureEx(water_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(water, {0, 0}, 0, scale, WHITE);
+            }
+
+            //draw price
+            DrawText("5 COINS", 430, 460, 30, YELLOW);
+            DrawText("4 COINS", 430, 365, 30, YELLOW);
+            DrawText(TextFormat("Coins: %d", coins), 830, 950, 30, YELLOW);
+
+            //ntoification animation
+            double elapsed = GetTime() - messagetimer;
+            if(shopmessage != 0 && elapsed < 1.0){
+                float alpha = 1.0f;
+                //fade out
+                if(elapsed > 0.3){
+                    alpha = (float)(0.6 - elapsed) / 0.3;
+                }
+                //float up
+                float y = 800 - (float)(elapsed) * 25;
+                const char* message = "";
+                Color messagecolor = GREEN;
+                // messages
+                if(shopmessage == 1){
+                    message = "+1 Peach Seed!";
+                }
+                else if(shopmessage == 2){
+                    message = "+1 Water Bucket!";
+                }
+                else if(shopmessage == 3){
+                    message = "Not Enough Coins!";
+                    messagecolor = RED;
+                }
+
+                int fontsize = 30;
+                int textwidth = MeasureText(message, fontsize);
+                int x = (screenWidth - textwidth) / 2;
+
+                //rounded bg
+                DrawRectangleRounded(
+                    {(float)x - 20, y - 10, (float)textwidth + 40, 55},
+                    0.2f,
+                    8, 
+                    Fade(BLACK, alpha * 0.6f)
+                );
+
+                //text shadow
+                DrawText(message, x + 2, (int)y + 2, fontsize, Fade(BLACK, alpha * 0.5f));
+
+                //draw it
+                DrawText(message, x, (int)y, fontsize, Fade(messagecolor, alpha));
+
+                
+            }
+
+            if(IsKeyPressed(KEY_ESCAPE)){
                 currentscreen = screen::screen2;
+            }
+
+        }
+        else if(currentscreen == screen::guide){
+            DrawTextureEx(guide_page, {0, 0}, 0, scale, WHITE);
+            DrawText("HOW TO PLAY", 450, 300, 50, DARKGREEN);
+            DrawText("WASD - Move your farmer", 400, 400, 30, BLACK);
+            DrawText("E - Plant, water, and harvest", 400, 460, 30, BLACK);
+            DrawText("Click icons to select tools", 400, 520, 30, BLACK);
+            DrawText("Sell peaches to earn coins", 400, 580, 30, BLACK);
+            DrawText("Buy seeds and water in the shop", 400, 640, 30, BLACK);
+            DrawText("ESC - Return to Menu", 400, 800, 50, BLACK);
+            if(IsKeyPressed(KEY_ESCAPE)){
+                currentscreen = screen::menu;
+            }
+        }
+        else if(currentscreen == screen::pause){
+            SetWindowOpacity(0.7f);
+            DrawRectangle(0, 0, screenWidth, screenHeight, BLACK);
+            DrawText("PAUSED", 530, 400, 50, WHITE);
+
+            //play triangle
+            DrawTriangle({610, 560}, {610, 680}, {710, 620}, WHITE);
+
+            if(IsKeyPressed(KEY_ESCAPE) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                currentscreen = screen::screen2;
+                SetWindowOpacity(1.0f);
             }
         }
             

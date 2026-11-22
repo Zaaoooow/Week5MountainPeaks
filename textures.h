@@ -45,6 +45,11 @@ extern Texture2D coindisplay;
 extern Texture2D shop;
 extern Texture2D shop_hover;
 extern Texture2D shop_page;
+extern Texture2D peach;
+extern Texture2D peach_hover;
+extern Texture2D water;
+extern Texture2D water_hover;
+extern Texture2D guide_page;
 
 
 void loadGameTextures();
