@@ -28,6 +28,16 @@ extern Texture2D dirt_seed;
 extern Texture2D dirt_plot_hover;
 extern Texture2D seed_button;
 extern Texture2D seed_button_hover;
+extern Texture2D water_button;
+extern Texture2D water_button_hover;
+extern Texture2D dirt_seed_hover;
+extern Texture2D plant_stage1;
+extern Texture2D plant_stage2;
+extern Texture2D plant_stage3;
+extern Texture2D water_seed1;
+extern Texture2D water_seed2;
+extern Texture2D harvest_hover;
+
 
 
 void loadGameTextures();

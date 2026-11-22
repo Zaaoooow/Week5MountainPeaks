@@ -26,6 +26,15 @@ Texture2D dirt_seed = {};
 Texture2D dirt_plot_hover = {}; 
 Texture2D seed_button = {};
 Texture2D seed_button_hover = {};
+Texture2D water_button = {};
+Texture2D water_button_hover = {};
+Texture2D dirt_seed_hover = {};
+Texture2D plant_stage1 = {};
+Texture2D plant_stage2 = {};
+Texture2D plant_stage3 = {};
+Texture2D water_seed1 = {};
+Texture2D water_seed2 = {};
+Texture2D harvest_hover = {};
 
 
 void loadGameTextures(){
@@ -56,6 +65,17 @@ void loadGameTextures(){
     dirt_plot_hover = LoadTexture("assets/game/dirt_plot_hover.png");
     seed_button = LoadTexture("assets/game/seed_button.png");
     seed_button_hover = LoadTexture("assets/game/seed_button_hover.png");
+    water_button = LoadTexture("assets/game/water_button.png");
+    water_button_hover = LoadTexture("assets/game/water_button_hover.png");
+    dirt_seed_hover = LoadTexture("assets/game/dirt_seed_hover.png");
+    //plant stages
+    water_seed1 = LoadTexture("assets/game/water_seed.png");
+    water_seed2 = LoadTexture("assets/game/water_seed2.png");
+    plant_stage1 = LoadTexture("assets/game/plant_stage1.png");
+    plant_stage2 = LoadTexture("assets/game/plant_stage2.png");
+    plant_stage3 = LoadTexture("assets/game/plant_stage3.png");
+    harvest_hover = LoadTexture("assets/game/harvest_hover.png");
+
     
 
     //set texture filter
@@ -85,6 +105,15 @@ void loadGameTextures(){
     SetTextureFilter(dirt_plot_hover, TEXTURE_FILTER_POINT);
     SetTextureFilter(seed_button, TEXTURE_FILTER_POINT);
     SetTextureFilter(seed_button_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water_button, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water_button_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(dirt_seed_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(plant_stage1, TEXTURE_FILTER_POINT);
+    SetTextureFilter(plant_stage2, TEXTURE_FILTER_POINT);
+    SetTextureFilter(plant_stage3, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water_seed1, TEXTURE_FILTER_POINT);
+    SetTextureFilter(water_seed2, TEXTURE_FILTER_POINT);
+    SetTextureFilter(harvest_hover, TEXTURE_FILTER_POINT);
 
 }
 

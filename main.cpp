@@ -34,6 +34,17 @@ int main(){
     int seedcount = 2;
     bool showseedcount = false;
 
+    int watercount = 2;
+    bool showwatercount = false;
+
+    // plant stage growth atnimations made by me (: i love it
+    double growthtimers[3][3] = {};
+    const double growthduration = 3.0;
+
+    //harvest
+    int cropcount = 0;
+
+
     while(!WindowShouldClose() && running){
         Vector2 cursor = GetMousePosition();
         BeginDrawing();
@@ -96,6 +107,28 @@ int main(){
             if(CheckCollisionPointRec(cursor, seedbuttonhitbox)){
                 if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                     showseedcount = !showseedcount;
+
+                    if(showseedcount){
+                        showwatercount = false;
+                    }
+                }
+            }
+
+            // water inventory button
+            Rectangle waterbuttonhitbox = {
+                28, 
+                108,
+                72,
+                72
+            };
+
+            if(CheckCollisionPointRec(cursor, waterbuttonhitbox)){
+                if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    showwatercount = !showwatercount;
+
+                    if(showwatercount){
+                        showseedcount = false;
+                    }
                 }
             }
             
@@ -177,10 +210,38 @@ int main(){
             }
 
             //plant seed in selected plot
-            if(selectedRow != -1 && IsKeyPressed(KEY_E)){
+            if(selectedRow != -1 && IsKeyPressed(KEY_E) && showseedcount){
                 if(farm[selectedRow][selectedCol] == 0 && seedcount > 0){
                     farm[selectedRow][selectedCol] = 1;
                     seedcount--;
+                }
+            }
+            //water planted seed
+            if(selectedRow != -1 && IsKeyPressed(KEY_E) && showwatercount){
+                if(farm[selectedRow][selectedCol] == 1 && watercount > 0){
+                    farm[selectedRow][selectedCol] = 2;
+                    growthtimers[selectedRow][selectedCol] = GetTime();
+                    watercount--;
+                }
+            }
+            //harvest full grown peach tree
+            if(selectedRow != -1 && IsKeyPressed(KEY_E) && !showseedcount && !showwatercount){
+                if(farm[selectedRow][selectedCol] == 6){
+                    farm[selectedRow][selectedCol] = 0;
+                    cropcount += 4;
+                    growthtimers[selectedRow][selectedCol] = 0;
+                }
+            }
+
+            //automatic plant growth after watering
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++){
+                    if(farm[row][col] >= 2 && farm[row][col] < 6){
+                        if(GetTime() - growthtimers[row][col] >= growthduration){
+                            farm[row][col]++;
+                            growthtimers[row][col] = GetTime();
+                        }
+                    }
                 }
             }
             
@@ -199,7 +260,32 @@ int main(){
                         }
                     }
                     else if(farm[row][col] == 1){
-                        DrawTextureEx(dirt_seed, {(float)x, (float)y}, 0, scale, WHITE);
+                        if(row == selectedRow && col == selectedCol && showwatercount){
+                            DrawTextureEx(dirt_seed_hover, {(float)x, (float)y}, 0, scale, WHITE);
+                        }
+                        else{
+                            DrawTextureEx(dirt_seed, {(float)x, (float)y}, 0, scale, WHITE);
+                        }
+                    }
+                    else if(farm[row][col] == 2){
+                        DrawTextureEx(water_seed1, {(float)x, (float)y}, 0, scale, WHITE);
+                    }
+                    else if(farm[row][col] == 3){
+                        DrawTextureEx(water_seed2, {(float)x, (float)y}, 0, scale, WHITE);
+                    }
+                    else if(farm[row][col] == 4){
+                        DrawTextureEx(plant_stage1, {(float)x, (float)y}, 0, scale, WHITE);
+                    }
+                    else if(farm[row][col] == 5){
+                        DrawTextureEx(plant_stage2, {(float)x, (float)y}, 0, scale, WHITE);
+                    }
+                    else if(farm[row][col] == 6){
+                        if(row == selectedRow && col == selectedCol){
+                            DrawTextureEx(harvest_hover, {(float)x, (float)y - 33.0f * 4}, 0, scale, WHITE);
+                        }
+                        else{
+                            DrawTextureEx(plant_stage3, {(float)x, (float)y - 33.0f * 4}, 0, scale, WHITE);
+                        }
                     }
                 }
             }
@@ -214,7 +300,18 @@ int main(){
             }
             //show seed count when clicked
             if(showseedcount){
-                DrawText(TextFormat("Seeds: %d", seedcount), 110, 48, 30, WHITE);
+                DrawText(TextFormat("Seeds: %d", seedcount), 110, 50, 30, WHITE);
+            }
+            //draw water button
+            if(CheckCollisionPointRec(cursor, waterbuttonhitbox) || showwatercount){
+                DrawTextureEx(water_button_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(water_button, {0, 0}, 0, scale, WHITE);
+            }
+            //show water count
+            if(showwatercount){
+                DrawText(TextFormat("Water: %d", watercount), 110, 130, 30, WHITE);
             }
 
         }   
