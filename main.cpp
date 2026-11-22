@@ -62,6 +62,7 @@ int main(){
     int rentincrease = 5;
     int totalrentpaid = 0;
     int totalearned = 0;
+    double savedrentremaining = rentduration;
 
     //load saved game
     std:: ifstream loadfile("save.txt");
@@ -103,8 +104,8 @@ int main(){
             if(rentremaining > rentduration){
                 rentremaining = rentduration;
             }
-            renttimer = GetTime() - (rentduration - rentremaining);
-            rentstarted = true;
+            savedrentremaining = rentremaining;
+            rentstarted = false;
         }
 
         loadfile >> totalrentpaid;
@@ -167,7 +168,7 @@ int main(){
                 }
 
                 //save rent data
-                double rentremaining = rentduration;
+                double rentremaining = savedrentremaining;
                 if(rentstarted){
                     rentremaining = rentduration - (GetTime() - renttimer);
                 }
@@ -193,6 +194,8 @@ int main(){
                 confirmreset = true;
             }
             else{
+                savedrentremaining = rentduration;
+                rentstarted = false;
                 //reset rent
                 rentcost = 20;
                 rentpaid = 0;
@@ -243,7 +246,7 @@ int main(){
                 if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                     currentscreen = screen::screen2;
                     if(!rentstarted){
-                        renttimer = GetTime();
+                        renttimer = GetTime() - (rentduration - savedrentremaining);
                         rentstarted = true;
                     }
                 }
@@ -797,6 +800,7 @@ int main(){
                 gameover = false;
                 renttimer = GetTime();
                 rentstarted = false;
+                savedrentremaining = rentduration;
 
                 //reset playuer
                 playerPos = {600, 600};
@@ -901,7 +905,7 @@ int main(){
             }
 
             //save rent
-            double rentremaining = rentduration;
+            double rentremaining = savedrentremaining;
 
             if(rentstarted){
                 rentremaining = rentduration - (GetTime() - renttimer);
