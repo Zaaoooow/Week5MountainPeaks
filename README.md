@@ -10,6 +10,13 @@ Try to make as much rounds as possible!
   L to save game
   backspace to reset game
 
+Guide to Download
+- Go to release file >> https://github.com/Zaaoooow/Week5MountainPeaks/releases/tag/v1.0.0
+- download Week5MountainPeaks
+- extract it
+- click on the exe file and run it
+- HAVE FUN!  
+
 How:
 I made this game using raylibs c++ after using python pygame last week, i didnt really like it but i learned new things
 this week about raylibs mostly, how to use enum classes from haven last sunday and its really useful for organizing,
