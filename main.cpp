@@ -11,7 +11,7 @@ int main(){
         menu,
         guide,
         screen2,
-        fourth
+        shop
     };
 
     bool running = true;
@@ -39,11 +39,14 @@ int main(){
 
     // plant stage growth atnimations made by me (: i love it
     double growthtimers[3][3] = {};
-    const double growthduration = 3.0;
+    const double growthduration = 0.5f;
 
     //harvest
     int cropcount = 0;
-
+    bool showcropcount = false;
+    int coins = 0;
+    int soldcount = 0;
+    bool showsoldcount = false;
 
     while(!WindowShouldClose() && running){
         Vector2 cursor = GetMousePosition();
@@ -129,6 +132,54 @@ int main(){
                     if(showwatercount){
                         showseedcount = false;
                     }
+                }
+            }
+
+            //crop count invetory
+            Rectangle cropdisplayhitbox = {
+                28, 
+                47 * 4,
+                72,
+                72
+            };
+            
+            if(CheckCollisionPointRec(cursor, cropdisplayhitbox)){
+                if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    showcropcount = !showcropcount;
+                }
+            }
+
+            //sell button
+            Rectangle sellbuttonhitbox = {
+                28, 
+                67 * 4,
+                72,
+                72
+            };
+
+            if(CheckCollisionPointRec(cursor, sellbuttonhitbox)){
+                if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    showsoldcount = !showsoldcount;
+                    if(cropcount > 0){
+                        coins += 3;
+                        cropcount --;
+                        soldcount++;
+
+                    }
+                }
+            }
+
+            //shop button
+            Rectangle shopbuttonhitbox = {
+                28, 
+                87 * 4,
+                72,
+                72 
+            };
+
+            if(CheckCollisionPointRec(cursor, shopbuttonhitbox)){
+                if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    currentscreen = screen::shop;
                 }
             }
             
@@ -225,7 +276,7 @@ int main(){
                 }
             }
             //harvest full grown peach tree
-            if(selectedRow != -1 && IsKeyPressed(KEY_E) && !showseedcount && !showwatercount){
+            if(selectedRow != -1 && IsKeyPressed(KEY_E)){
                 if(farm[selectedRow][selectedCol] == 6){
                     farm[selectedRow][selectedCol] = 0;
                     cropcount += 4;
@@ -291,6 +342,14 @@ int main(){
             }
             // draw farmer
             DrawTextureEx(currentfarmer, playerPos, 0, 4.0f, WHITE);
+            //harvest interaction message
+            if(selectedRow != -1){
+                if(farm[selectedRow][selectedCol] == 6){
+                    int x = startX + selectedCol * (plotSize + gap);
+                    int y = startY + selectedRow * (plotSize + gap);
+                    DrawText("Press E to Harvest", x, y - 160, 24, WHITE);
+                }
+            }
             //draw seed button
             if(CheckCollisionPointRec(cursor, seedbuttonhitbox) || showseedcount){
                 DrawTextureEx(seed_button_hover, {0, 0}, 0, scale, WHITE);
@@ -313,8 +372,42 @@ int main(){
             if(showwatercount){
                 DrawText(TextFormat("Water: %d", watercount), 110, 130, 30, WHITE);
             }
+            // draw crop display
+            if(CheckCollisionPointRec(cursor, cropdisplayhitbox)){
+                DrawTextureEx(crop_display_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(crop_display, {0, 0}, 0, scale, WHITE);
+            }
+            //cshow crop count
+            if(showcropcount){
+                DrawText(TextFormat("Peaches: %d", cropcount), 110, 210, 30, WHITE);
+            }
+            //draw sell button
+            if(CheckCollisionPointRec(cursor, sellbuttonhitbox)){
+                DrawTextureEx(sell_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(sell, {0, 0}, 0, scale, WHITE);
+            }
+            DrawTextureEx(coindisplay, {0, 0}, 0, scale, WHITE);
+            DrawText(TextFormat("Coins: %d", coins), 100, 1194, 30, YELLOW);
+            DrawText(TextFormat("Sold: %d", soldcount), 110, 290, 30, WHITE);
+            //draw shop button
+            if(CheckCollisionPointRec(cursor, shopbuttonhitbox)){
+                DrawTextureEx(shop_hover, {0, 0}, 0, scale, WHITE);
+            }
+            else{
+                DrawTextureEx(shop, {0, 0}, 0, scale, WHITE);
+            }
 
-        }   
+        }
+        else if(currentscreen == screen::shop){
+            DrawTextureEx(shop_page, {0, 0}, 0, scale, WHITE);
+            if(IsKeyPressed(KEY_ESCAPE)  || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                currentscreen = screen::screen2;
+            }
+        }
             
         
         EndDrawing();

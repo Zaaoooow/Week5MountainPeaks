@@ -37,7 +37,14 @@ extern Texture2D plant_stage3;
 extern Texture2D water_seed1;
 extern Texture2D water_seed2;
 extern Texture2D harvest_hover;
-
+extern Texture2D crop_display;
+extern Texture2D crop_display_hover;
+extern Texture2D sell;
+extern Texture2D sell_hover;
+extern Texture2D coindisplay;
+extern Texture2D shop;
+extern Texture2D shop_hover;
+extern Texture2D shop_page;
 
 
 void loadGameTextures();

@@ -35,6 +35,14 @@ Texture2D plant_stage3 = {};
 Texture2D water_seed1 = {};
 Texture2D water_seed2 = {};
 Texture2D harvest_hover = {};
+Texture2D crop_display = {};
+Texture2D crop_display_hover = {};
+Texture2D sell = {};
+Texture2D sell_hover = {};
+Texture2D coindisplay = {};
+Texture2D shop = {};
+Texture2D shop_hover = {};
+Texture2D shop_page = {};
 
 
 void loadGameTextures(){
@@ -75,6 +83,14 @@ void loadGameTextures(){
     plant_stage2 = LoadTexture("assets/game/plant_stage2.png");
     plant_stage3 = LoadTexture("assets/game/plant_stage3.png");
     harvest_hover = LoadTexture("assets/game/harvest_hover.png");
+    crop_display = LoadTexture("assets/game/crop_display.png");
+    crop_display_hover = LoadTexture("assets/game/crop_display_hover.png");
+    sell = LoadTexture("assets/game/sell.png");
+    sell_hover = LoadTexture("assets/game/sell_hover.png");
+    coindisplay = LoadTexture("assets/game/coindisplay.png");
+    shop = LoadTexture("assets/game/shop.png");
+    shop_hover = LoadTexture("assets/game/shop_hover.png");
+    shop_page = LoadTexture("assets/game/shop_page.png");
 
     
 
@@ -114,6 +130,15 @@ void loadGameTextures(){
     SetTextureFilter(water_seed1, TEXTURE_FILTER_POINT);
     SetTextureFilter(water_seed2, TEXTURE_FILTER_POINT);
     SetTextureFilter(harvest_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(crop_display, TEXTURE_FILTER_POINT);
+    SetTextureFilter(crop_display_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(sell, TEXTURE_FILTER_POINT);
+    SetTextureFilter(sell_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(coindisplay, TEXTURE_FILTER_POINT);
+    SetTextureFilter(shop, TEXTURE_FILTER_POINT);
+    SetTextureFilter(shop_hover, TEXTURE_FILTER_POINT);
+    SetTextureFilter(shop_page, TEXTURE_FILTER_POINT);
+
 
 }
 
