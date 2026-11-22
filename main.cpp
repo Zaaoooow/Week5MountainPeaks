@@ -3,6 +3,7 @@
 #include "textures.h"
 #include <cmath>
 #include <fstream>
+#include <cstdio>
 
 int main(){
     initGame();
@@ -13,7 +14,8 @@ int main(){
         guide,
         screen2,
         shop,
-        pause
+        pause,
+        gameover
     };
 
     bool running = true;
@@ -41,7 +43,7 @@ int main(){
 
     // plant stage growth atnimations made by me (: i love it
     double growthtimers[3][3] = {};
-    const double growthduration = 0.5f;
+    const double growthduration = 2.0f;
 
     //harvest
     int cropcount = 0;
@@ -50,6 +52,73 @@ int main(){
     int soldcount = 0;
     bool showsoldcount = false;
 
+    // rent system
+    double renttimer = 0;
+    const double rentduration = 90.0;
+    int rentcost = 20;
+    bool rentstarted = false;
+    bool gameover = false;
+    int rentpaid = 0;
+    int rentincrease = 5;
+    int totalrentpaid = 0;
+    int totalearned = 0;
+
+    //load saved game
+    std:: ifstream loadfile("save.txt");
+    if(loadfile.is_open()){
+        loadfile >> coins;
+        loadfile >> seedcount;
+        loadfile >> watercount;
+        loadfile >> cropcount;
+        loadfile >> soldcount;
+
+        //load farm plots
+        for(int row = 0; row < 3; row++){
+            for(int col = 0; col < 3; col++){
+                loadfile >> farm[row][col];
+            }
+        }
+
+        //load growth time left
+        for(int row = 0; row < 3; row++){
+            for(int col = 0; col < 3; col++){
+                double remaining = 0;
+                if(loadfile >> remaining){
+                    if(farm[row][col] >= 2 && farm[row][col] < 6){
+                        growthtimers[row][col] = GetTime() - (growthduration - remaining);
+                    }
+                }
+                else if(farm[row][col] >= 2 && farm[row][col] < 6){
+                    growthtimers[row][col] = GetTime();
+                }
+            }
+        }
+
+        //load rent data
+        double rentremaining = rentduration;
+        if(loadfile >> rentremaining >> rentcost >> rentpaid){
+            if(rentremaining < 0){
+                rentremaining = 0;
+            }
+            if(rentremaining > rentduration){
+                rentremaining = rentduration;
+            }
+            renttimer = GetTime() - (rentduration - rentremaining);
+            rentstarted = true;
+        }
+
+        loadfile >> totalrentpaid;
+        loadfile >> totalearned;
+
+        loadfile.close();
+
+    }
+    //save notifications
+    bool showsavemessage = false;
+    double savetimer = 0;
+    // reset
+    bool confirmreset = false;
+
     //notifications
     int shopmessage = 0;
     double messagetimer = 0;
@@ -57,8 +126,103 @@ int main(){
     //pause
     bool paused = false;
 
+
+
     while(!WindowShouldClose() && running){
         Vector2 cursor = GetMousePosition();
+
+        //fstream!!
+        if(IsKeyPressed(KEY_L)){
+            std::ofstream savefile("save.txt");
+
+            if(savefile.is_open()){
+                savefile << coins << "\n";
+                savefile << seedcount << "\n";
+                savefile << watercount << "\n";
+                savefile << cropcount << "\n";
+                savefile << soldcount << "\n";
+
+
+                //save plots
+                for(int row = 0; row < 3; row++){
+                    for(int col = 0; col < 3; col++){
+                        savefile << farm[row][col] << " ";
+                    }
+                    savefile << "\n";
+                }
+
+                //save growth time left
+                for(int row = 0; row < 3; row++){
+                    for(int col = 0; col < 3; col++){
+                        double remaining = 0;
+                        if(farm[row][col] >= 2 && farm[row][col] < 6){
+                            remaining = growthduration - (GetTime() - growthtimers[row][col]);
+                            if(remaining < 0){
+                                remaining = 0;
+                            }
+                        }
+                        savefile << remaining << " ";
+                    }
+                    savefile << "\n";
+                }
+
+                //save rent data
+                double rentremaining = rentduration;
+                if(rentstarted){
+                    rentremaining = rentduration - (GetTime() - renttimer);
+                }
+                if(rentremaining < 0){
+                    rentremaining = 0;
+                }
+
+                savefile << rentremaining << "\n";
+                savefile << rentcost << "\n";
+                savefile<< rentpaid << "\n";
+                savefile << totalrentpaid << "\n";
+                savefile << totalearned << "\n";
+
+                savefile.close();
+
+                showsavemessage = true;
+                savetimer = GetTime();
+            }
+        }
+        //rset data
+        if(IsKeyPressed(KEY_BACKSPACE)){
+            if(!confirmreset){
+                confirmreset = true;
+            }
+            else{
+                //reset rent
+                rentcost = 20;
+                rentpaid = 0;
+                gameover = false;
+                renttimer = GetTime();
+                //reset totals
+                totalearned = 0;
+                totalrentpaid = 0;
+                //reset inveotry
+                coins = 0;
+                seedcount = 2;
+                watercount = 2;
+                cropcount = 0;
+                soldcount = 0;
+                //reset farm
+                for(int row = 0; row < 3; row++){
+                    for(int col = 0; col < 3; col++){
+                        farm[row][col] = 0;
+                        growthtimers[row][col] = 0;
+                    }
+                }
+                //deleete save file
+                std::remove("save.txt");
+                confirmreset = false;
+            }
+        }
+        if(IsKeyPressed(KEY_P)){
+            confirmreset = false;
+        }
+
         BeginDrawing();
 
         if(currentscreen == screen::menu){
@@ -78,6 +242,10 @@ int main(){
                 DrawTextureEx(menu_play_button_hover, {0, 0}, 0, 4.0f, WHITE);
                 if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                     currentscreen = screen::screen2;
+                    if(!rentstarted){
+                        renttimer = GetTime();
+                        rentstarted = true;
+                    }
                 }
             }
             else{
@@ -113,6 +281,44 @@ int main(){
             }
             ClearBackground(WHITE);
             DrawTextureEx(game_background, {0, 0}, 0, 4.0f, WHITE);
+
+            //rent countdown
+            double timeleft = rentduration - (GetTime() - renttimer);
+            if(timeleft < 0){
+                timeleft = 0;
+            }
+
+            int minutes = (int)timeleft / 60;
+            int seconds = (int)timeleft % 60;
+
+            DrawText(
+                TextFormat("Rent: %02d:%02d", minutes, seconds),
+                450, 30, 40, WHITE
+            );
+
+            DrawText(
+                TextFormat("Rent Due: %d Coins", rentcost),
+                450, 80, 30, YELLOW
+            );
+
+            DrawText(
+                TextFormat("Round: %d", rentpaid + 1),
+                450, 120, 30, GREEN
+            );
+
+            if(timeleft <= 0 && !gameover){
+                if(coins >= rentcost){
+                    totalrentpaid += rentcost;
+                    coins -= rentcost;
+                    rentpaid++;
+                    renttimer = GetTime();
+                    rentcost += rentincrease;
+                }
+                else{
+                    gameover = true;
+                    currentscreen = screen::gameover;
+                }
+            }
             
 
             //seed inventory button
@@ -180,6 +386,7 @@ int main(){
                         coins += 3;
                         cropcount --;
                         soldcount++;
+                        totalearned += 3;
 
                     }
                 }
@@ -561,9 +768,157 @@ int main(){
                 SetWindowOpacity(1.0f);
             }
         }
-            
+        else if(currentscreen == screen::gameover){
+            DrawTextureEx(gameover_screen, {0, 0}, 0, scale, WHITE);
+            DrawText(TextFormat("Round Reached: %d", rentpaid + 1), 400, 500, 60, YELLOW);
+            DrawText(TextFormat("Total Earned: %d Coins", totalearned), 375, 575, 40, YELLOW);
+            DrawText(TextFormat("Total Rent paid: %d Coins", totalrentpaid), 375, 650, 40, YELLOW);
+            DrawText("Press R to return", 400, 750, 60, GREEN);
+
+            if(IsKeyPressed(KEY_R)){
+                //reset inventory
+                coins = 0;
+                seedcount = 2;
+                watercount = 2;
+                cropcount = 0;
+                soldcount = 0;
+
+                //reset farm
+                for(int row = 0; row < 3; row++){
+                    for(int col = 0; col < 3; col++){
+                        farm[row][col] = 0;
+                        growthtimers[row][col] = 0;
+                    }
+                }
+
+                //reset rent
+                rentcost = 20;
+                rentpaid = 0;
+                gameover = false;
+                renttimer = GetTime();
+                rentstarted = false;
+
+                //reset playuer
+                playerPos = {600, 600};
+                currentfarmer = farmer_down;
+                //restart game
+                currentscreen = screen::menu;
+
+                std::remove("save.txt");
+
+            }
+
+        }
+        
+        if(showsavemessage){
+            double elapsed = GetTime() - savetimer;
+            if(elapsed < 1.0){
+                float alpha = 1.0f;
+                //fade out after 0.5
+                if(elapsed > 0.5){
+                    alpha = (float)((1.0 - elapsed) / 0.5);
+                }
+                //float up
+                float y = 800 - (float)elapsed * 25;
+
+                const char* message = "Game Saved!";
+                int fontsize = 30;
+                int textwidth = MeasureText(message, fontsize);
+                int x = (screenWidth - textwidth) / 2;
+
+                DrawRectangleRounded(
+                    {(float)x - 20, y - 10, (float)textwidth + 40, 55},
+                    0.2f,
+                    8,
+                    Fade(BLACK, alpha * 0.6f)
+                );
+
+                //text shadow!
+                DrawText(message, x + 2, (int)y + 2, fontsize, Fade(BLACK, alpha * 0.5f));
+                //green notification
+                DrawText(message, x, (int)y, fontsize, Fade(GREEN, alpha));
+            }
+            else{
+                showsavemessage = false;
+            }
+        }
+        if(confirmreset){
+            const char* message = "Press Backspace again to reset (P to cancel)";
+
+            int fontsize = 25;
+            int textwidth = MeasureText(message, fontsize);
+            int x = (screenWidth - textwidth) / 2;
+            DrawRectangleRounded(
+                {(float)x - 20, 850, (float)textwidth + 40, 55},
+                0.2f,
+                8,
+                Fade(BLACK, 0.7f)
+            );
+            DrawText(message, x, 860, fontsize, RED);
+        }
+
         
         EndDrawing();
+
+    }
+
+        //automatically save when exiting
+    if(!gameover){
+        std::ofstream savefile("save.txt");
+
+        if(savefile.is_open()){
+            //save inventory
+            savefile << coins << "\n";
+            savefile << seedcount << "\n";
+            savefile << watercount << "\n";
+            savefile << cropcount << "\n";
+            savefile << soldcount << "\n";
+
+            //save farm plots
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++){
+                    savefile << farm[row][col] << " ";
+                }
+                savefile << "\n";
+            }
+
+            //save growth timers
+            for(int row = 0; row < 3; row++){
+                for(int col = 0; col < 3; col++){
+                    double remaining = 0;
+
+                    if(farm[row][col] >= 2 && farm[row][col] < 6){
+                        remaining = growthduration - (GetTime() - growthtimers[row][col]);
+
+                        if(remaining < 0){
+                            remaining = 0;
+                        }
+                    }
+
+                    savefile << remaining << " ";
+                }
+                savefile << "\n";
+            }
+
+            //save rent
+            double rentremaining = rentduration;
+
+            if(rentstarted){
+                rentremaining = rentduration - (GetTime() - renttimer);
+            }
+
+            if(rentremaining < 0){
+                rentremaining = 0;
+            }
+
+            savefile << rentremaining << "\n";
+            savefile << rentcost << "\n";
+            savefile << rentpaid << "\n";
+            savefile << totalrentpaid << "\n";
+            savefile << totalearned << "\n";
+
+            savefile.close();
+        }
     }
     unloadGameTextures();
     CloseWindow();

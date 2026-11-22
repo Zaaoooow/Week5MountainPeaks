@@ -48,6 +48,7 @@ Texture2D peach_hover = {};
 Texture2D water = {};
 Texture2D water_hover = {};
 Texture2D guide_page = {};
+Texture2D gameover_screen = {};
 
 
 void loadGameTextures(){
@@ -101,6 +102,7 @@ void loadGameTextures(){
     water = LoadTexture("assets/game/water.png");
     water_hover = LoadTexture("assets/game/water_hover.png");
     guide_page = LoadTexture("assets/menu/guide_page.png");
+    gameover_screen = LoadTexture("assets/menu/gameover.png");
 
     
 
@@ -153,6 +155,7 @@ void loadGameTextures(){
     SetTextureFilter(water, TEXTURE_FILTER_POINT);
     SetTextureFilter(water_hover, TEXTURE_FILTER_POINT);
     SetTextureFilter(guide_page, TEXTURE_FILTER_POINT);
+    SetTextureFilter(gameover_screen, TEXTURE_FILTER_POINT);
 
 
 }

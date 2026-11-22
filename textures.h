@@ -50,7 +50,7 @@ extern Texture2D peach_hover;
 extern Texture2D water;
 extern Texture2D water_hover;
 extern Texture2D guide_page;
-
+extern Texture2D gameover_screen;
 
 void loadGameTextures();
 void unloadGameTextures();
