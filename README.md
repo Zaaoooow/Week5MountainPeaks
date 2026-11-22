@@ -26,3 +26,7 @@ the theme of the week was mountain peaks and crops were peaches so i decided to 
 i was so proud of my drawing in the background, that took like an hour. and then i made a 3d looking 2d hat and a character with 8 directional 
 movement adn MY PLANT GROWTH, i love it! its so nice, im surprised that i even made these, but i did improve from my first week alot.
 
+
+<img width="1264" height="1301" alt="Screenshot 2026-11-21 200352" src="https://github.com/user-attachments/assets/d961b7cf-bc86-438b-8932-3a2ac4589a50" />
+<img width="1285" height="1297" alt="Screenshot 2026-11-22 135207" src="https://github.com/user-attachments/assets/7c3ed2f1-97db-491c-8068-da1c6f600396" />
+<img width="1276" height="1277" alt="Screenshot 2026-11-22 135130" src="https://github.com/user-attachments/assets/84a96c23-1fee-4a4b-aac0-83eb48e52d0b" />
